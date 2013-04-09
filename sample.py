@@ -103,16 +103,15 @@ def do_mh(display=False):
   def f_pdf(x):
     return 0.2 * f1_pdf(x) + 0.3 * f2_pdf(x) + 0.5 * f3_pdf(x)
   
-  mew, sigma = 0, 1
-  proposal = norm(mew, sigma).pdf
+  mew, sigma = 0, 5
   samples = []
   num_accepts = 0
   num_samples = 500
   x = rand.normal(mew, sigma, 1)[0] # initialize with a direct sample
   for i in range(num_samples):
-    x_prime = rand.normal(mew, sigma, 1)[0]
+    x_prime = x + rand.normal(mew, sigma, 1)[0]
     
-    alpha = (f_pdf(x_prime)/f_pdf(x)) * (proposal(x)/proposal(x_prime))
+    alpha = (f_pdf(x_prime)/f_pdf(x))
     
     u = rand.uniform(0, 1, 1)[0]
     
@@ -128,7 +127,7 @@ def do_mh(display=False):
   print "Metropolis Hastings"
   print "\taccept_rate = {0}".format(float(num_accepts)/num_samples)
   
-  plot_histogram(samples, "Histogram of 500 Metropolis Hastings Samples with SD={0}".format(sigma), "mh_sd-{0}.pdf".format(sigma), display=display, bins=30, width=0.2)
+  plot_histogram(samples, "Histogram of 500 Metropolis Hastings Samples with SD={0}".format(sigma), "mh_sd-{0}.pdf".format(sigma), display=display, bins=50, width=0.2)
 
 if __name__ == "__main__":
   do_plot()
