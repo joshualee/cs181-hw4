@@ -12,14 +12,14 @@ import matplotlib.pyplot as plt
 from scipy.stats import norm, histogram
 import numpy.random as rand
 
-def plot_histogram(data, title, pdf_name, display=False, bins=50, width=0.5):
+def plot_histogram(data, title, jpg_name, display=False, bins=50, width=0.5):
   num_bins = bins
   counts, xaxis = np.histogram(data, bins=num_bins)
   
   plt.figure()
   plt.title(title)
   plt.bar(xaxis[:num_bins], counts, width=width)
-  savefig(pdf_name)
+  savefig(jpg_name)
   if display: plt.show()
 
 def do_plot(display=False): 
@@ -28,7 +28,7 @@ def do_plot(display=False):
     + 0.5 * norm.pdf(range, 3, 2) 
   plt.title("plot of f(x) (density function)")
   plt.plot(range, f)
-  savefig("plot.pdf")
+  savefig("plot.jpg")
   if display: plt.show()
 
 def do_direct_sampling(display=False):
@@ -46,7 +46,7 @@ def do_direct_sampling(display=False):
   
     f_samples.append(new_sample)
   
-  plot_histogram(f_samples, "Histogram of 500 direct samples from f", "direct.pdf", display=display)
+  plot_histogram(f_samples, "Histogram of 500 direct samples from f", "direct.jpg", display=display)
   
 def do_rejection_sampling(display=False):
   range = np.arange(-10, 10, 0.001)
@@ -62,7 +62,7 @@ def do_rejection_sampling(display=False):
   f_plot, = plt.plot(range, f, color='b')
   q_plot, = plt.plot(range, q, color='r')
   plt.legend((f_plot, q_plot), ("f(x)", "c * q(x)"), "upper right")
-  savefig("upperbound.pdf")
+  savefig("upperbound.jpg")
   if display: plt.show()
 
   # define our PDFs
@@ -93,7 +93,7 @@ def do_rejection_sampling(display=False):
   print "Rejection Sampling"
   print "\tnum_rejects = {0}".format(num_rejects)
   
-  plot_histogram(samples, "Histogram of 500 rejection samples", "rejection.pdf", display=display)
+  plot_histogram(samples, "Histogram of 500 rejection samples", "rejection.jpg", display=display)
   
 def do_mh(display=False):
   f1_pdf = norm(1, sqrt(25)).pdf
@@ -103,7 +103,7 @@ def do_mh(display=False):
   def f_pdf(x):
     return 0.2 * f1_pdf(x) + 0.3 * f2_pdf(x) + 0.5 * f3_pdf(x)
   
-  mew, sigma = 0, 5
+  mew, sigma = 0, 100
   samples = []
   num_accepts = 0
   num_samples = 500
@@ -111,6 +111,7 @@ def do_mh(display=False):
   for i in range(num_samples):
     x_prime = x + rand.normal(mew, sigma, 1)[0]
     
+    # p(x' -> x) / p(x -> x') = 1 b/c normal is symmetric
     alpha = (f_pdf(x_prime)/f_pdf(x))
     
     u = rand.uniform(0, 1, 1)[0]
@@ -127,10 +128,10 @@ def do_mh(display=False):
   print "Metropolis Hastings"
   print "\taccept_rate = {0}".format(float(num_accepts)/num_samples)
   
-  plot_histogram(samples, "Histogram of 500 Metropolis Hastings Samples with SD={0}".format(sigma), "mh_sd-{0}.pdf".format(sigma), display=display, bins=50, width=0.2)
+  plot_histogram(samples, "Histogram of 500 Metropolis Hastings Samples with SD={0}".format(sigma), "mh_sd-{0}.jpg".format(sigma), display=display, bins=50, width=0.2)
 
 if __name__ == "__main__":
   do_plot()
   do_direct_sampling()
   do_rejection_sampling()
-  do_mh(display=True)
+  do_mh()
